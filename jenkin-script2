@@ -1,0 +1,36 @@
+node {
+    try {
+        // Define the Git repository URL
+        def gitRepo = 'https://github.com/yourusername/your-repo.git'
+ 
+        // Clean workspace before checking out code
+        cleanWs()
+ 
+        // Checkout code from Git
+        checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: gitRepo]]])
+ 
+        // Set up environment variables (you can add more as needed)
+        def javaHome = tool 'JDK8'
+        def mavenHome = tool 'Maven3'
+ 
+        withEnv(["PATH+JDK=${javaHome}/bin", "PATH+MAVEN=${mavenHome}/bin"]) {
+            // Build the Java application using Maven
+            sh "mvn clean install"
+ 
+            // Deploy the application (replace with your deployment steps)
+            sh "java -jar target/your-app.jar"
+ 
+            // Archive the build artifacts
+            archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
+        }
+    } catch (Exception e) {
+        currentBuild.result = 'FAILURE'
+        throw e
+    } finally {
+        // Publish JUnit test results (if applicable)
+        step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
+ 
+        // Publish build status
+        currentBuild.result = 'SUCCESS'
+    }
+}
