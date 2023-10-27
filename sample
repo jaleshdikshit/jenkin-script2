@@ -1,0 +1,92 @@
+[9:27 AM] Dev Ops Class-1
+pipeline {
+
+    agent any
+ 
+    stages {
+
+        stage('Checkout') {
+
+            steps {
+
+                // Checkout your code repository, e.g., from Git
+
+                checkout scm
+
+            }
+
+        }
+ 
+        stage('Build') {
+
+            steps {
+
+                // Compile and build your Java application
+
+                sh 'mvn clean install'
+
+            }
+
+        }
+ 
+        stage('Deploy') {
+
+            steps {
+
+                // Assuming you have Tomcat running and configured
+
+                // Copy the WAR file to the Tomcat webapps directory for deployment
+
+                sh 'cp target/your-app.war /path/to/tomcat/webapps/'
+
+            }
+
+        }
+ 
+        stage('Test') {
+
+            steps {
+
+                // Add your test scripts here
+
+                // For example, run unit tests or integration tests
+
+                sh 'mvn test'
+
+            }
+
+        }
+ 
+        stage('Post-Deployment Actions') {
+
+            steps {
+
+                // Any post-deployment actions or notifications can go here
+
+            }
+
+        }
+
+    }
+ 
+    post {
+
+        success {
+
+            // Actions to perform when the pipeline succeeds
+
+            // For example, send a notification or trigger downstream jobs
+
+        }
+ 
+        failure {
+
+            // Actions to perform when the pipeline fails
+
+            // For example, send a failure notification
+
+        }
+
+    }
+
+}
